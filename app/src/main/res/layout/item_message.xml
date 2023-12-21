@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+    android:id="@+id/containerBox"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <Space
+        android:id="@+id/spacer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/layoutBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginTop="5dp"
+        android:background="@android:drawable/editbox_background_normal"
+        android:orientation="vertical"
+        tools:backgroundTint="@android:color/holo_orange_light">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/textBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="250dp"
+            android:padding="10dp"
+            tools:text="@android:string/httpErrorUnsupportedScheme" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/dateBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:textSize="12sp"
+            tools:text="20:50" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</androidx.appcompat.widget.LinearLayoutCompat>

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">PopupDialog</string>
+    <string name="write_something">Write Something...</string>
 </resources>
