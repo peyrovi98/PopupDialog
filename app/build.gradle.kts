@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.github.peyrovi98.popupdialog"
+    namespace = "com.github.peyrovi98.popupdialog_sample"
     compileSdk = 33
 
     defaultConfig {
-        applicationId = "com.github.peyrovi98.popupdialog"
+        applicationId = "com.github.peyrovi98.popupdialog_sample"
         minSdk = 24
         targetSdk = 33
         versionCode = 1

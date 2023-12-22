@@ -1,4 +1,4 @@
-package com.github.peyrovi98.popupdialog.sample
+package com.github.peyrovi98.popupdialog_sample
 
 import android.content.Context
 import android.content.res.ColorStateList
@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import com.github.peyrovi98.popupdialog.databinding.ItemMessageBinding
+import com.github.peyrovi98.popupdialog_sample.databinding.ItemMessageBinding
 import java.util.Date
 
 class MessageAdapter(

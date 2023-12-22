@@ -1,4 +1,4 @@
-package com.github.peyrovi98.popupdialog.sample
+package com.github.peyrovi98.popupdialog_sample
 
 import android.content.res.ColorStateList
 import android.os.Handler
@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
-import com.github.peyrovi98.popupdialog.databinding.LiPopupDialogListBinding
+import com.github.peyrovi98.popupdialog_sample.databinding.LiPopupDialogListBinding
 
 class PopupDialogListRecyclerViewAdapter(
     private val dialog: DialogFragment,
