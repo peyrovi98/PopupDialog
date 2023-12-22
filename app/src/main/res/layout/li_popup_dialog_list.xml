@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:foreground="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/imageView_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        tools:src="@android:drawable/ic_search_category_default"
+        android:tint="@android:color/black" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/textViewTitle"
+        android:textSize="12sp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:textColor="@android:color/black"
+        android:layout_weight="1"
+        tools:text="search" />
+</androidx.appcompat.widget.LinearLayoutCompat>

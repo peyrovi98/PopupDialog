@@ -1,15 +1,11 @@
-package com.github.peyrovi98.popupdialog
+package com.github.peyrovi98.popupdialog.sample
 
 import android.content.Context
 import android.content.res.ColorStateList
 import android.text.format.DateFormat
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import android.widget.LinearLayout
-import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.github.peyrovi98.popupdialog.databinding.ItemMessageBinding

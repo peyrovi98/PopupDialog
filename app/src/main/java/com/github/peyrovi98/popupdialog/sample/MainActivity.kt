@@ -1,4 +1,4 @@
-package com.github.peyrovi98.popupdialog
+package com.github.peyrovi98.popupdialog.sample
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
