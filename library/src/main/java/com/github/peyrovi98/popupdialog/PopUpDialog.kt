@@ -53,6 +53,7 @@ class PopUpDialog(
 
     private fun initializer() {
         binding?.apply {
+            viewPopup.addView(popupView)
             getBitmapFromViewUsingCanvas(selectedView).let {
                 imageViewCloneSelected.apply {
                     val params = layoutParams
@@ -62,7 +63,7 @@ class PopUpDialog(
                     x = selectedViewPosition[0].toFloat() + startX
                     y = selectedViewPosition[1].toFloat()
                     bitmap = it
-                    isVisible = isHighlighted
+                    visibility = if (isHighlighted) View.VISIBLE else View.INVISIBLE
 
                 }.setImageBitmap(it)
             }
@@ -107,7 +108,6 @@ class PopUpDialog(
     override fun run() {
         binding?.apply {
             viewPopup.apply {
-                addView(popupView)
                 if (visibility != View.INVISIBLE)
                     return
                 x = findPopupX()
@@ -125,35 +125,47 @@ class PopUpDialog(
     private fun findPopupX(): Float {
         var targetX: Float
         targetX = if (selectedViewPosition[0] < screenX / 2) {
-            (selectedViewPosition[0].toFloat() + selectedView.width / 2)
+            (selectedViewPosition[0].toFloat() + binding!!.imageViewCloneSelected.width / 2)
         } else {
-            (selectedViewPosition[0].toFloat() + selectedView.width / 2) - binding!!.imageViewCloneSelected.width
+            (selectedViewPosition[0].toFloat() + binding!!.imageViewCloneSelected.width / 2) - binding!!.viewPopup.width
         }
         if (targetX < 0)
             targetX = 0f
         else if (screenX < targetX + binding!!.imageViewCloneSelected.width + 10)
             targetX = screenX - (binding!!.imageViewCloneSelected.width + 10f)
+        if (endX != 0)
+            if (targetX < startX)
+                targetX = startX.toFloat()
+            else if (endX < targetX + binding!!.viewPopup.width)
+                targetX = endX - binding!!.viewPopup.width.toFloat()
         return targetX
     }
 
     private fun findPopupY(): Float {
         var targetY: Float
-        targetY = if (selectedViewPosition[1] < (screenY / 2) - selectedView.height) {
-            selectedViewPosition[1].toFloat() + (selectedView.height + 10)
-        } else {
-            selectedViewPosition[1].toFloat() - (binding!!.imageViewCloneSelected.height + 10)
-        }
+        targetY =
+            if (selectedViewPosition[1] < (screenY / 2) - binding!!.imageViewCloneSelected.height) {
+                selectedViewPosition[1].toFloat() + (binding!!.imageViewCloneSelected.height + 10)
+            } else {
+                selectedViewPosition[1].toFloat() - (binding!!.viewPopup.height + 10)
+            }
         if (targetY < 0)
             targetY = 0f
         else if (screenY < targetY + binding!!.imageViewCloneSelected.height + 10)
             targetY = screenY - (binding!!.imageViewCloneSelected.measuredHeight + 10f)
+
+        if (endY != 0)
+            if (targetY < startY)
+                targetY = startY.toFloat()
+            else if (endY < targetY + binding!!.viewPopup.height)
+                targetY = endY - binding!!.viewPopup.height.toFloat()
         return targetY
     }
 
     private fun getBitmapFromViewUsingCanvas(v: View): Bitmap {
         val result: Bitmap
         selectedView.getLocationOnScreen(selectedViewPosition)
-        selectedViewPosition[1] -= statusBarHeight()
+//        selectedViewPosition[1] -= statusBarHeight()
         var bitmap =
             Bitmap.createBitmap(v.width, v.height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
@@ -198,86 +210,4 @@ class PopUpDialog(
         bitmap.recycle()
         return result
     }
-
-
-//    private fun messageOptionPopup(v: View, event: DecryptedEventEntity) {
-//        val result = getBitmapFromViewUsingCanvas(v)
-//        PopUpDialog(
-//            selectedView = v,
-//            bitmap = result[0] as Bitmap,
-//            bitmapOffsetY = result[1] as Int,
-//            popupList = ArrayList<DialogListItem>().apply {
-//                add(DialogListItem(R.drawable.ic_reply_square_2, R.string.reply))
-//                if (event.canEdit()) DialogListItem(R.drawable.ic_edit_3, R.string.edit)
-//                add(DialogListItem(R.drawable.ic_copy_1, R.string.copy))
-//                if (event.canForward()) add(
-//                    DialogListItem(
-//                        R.drawable.forward_square_1,
-//                        R.string.forward
-//                    )
-//                )
-//                if (event.isMine) add(DialogListItem(R.drawable.ic_trash_1, R.string.delete, true))
-//            },
-//            onItemSelectListener = object : DialogListRecyclerViewAdapterEventListener {
-//                override fun onDialogListItemClickListener(title: Int) {
-//                    when (title) {
-//                        R.string.reply -> {
-//                            hideLongEventIcons()
-//                            roomViewModel.handle(RoomViewActions.ReplyModeEnabled)
-//                            renderReplyEditMessage(event, false)
-//                        }
-//
-//                        R.string.edit -> {
-//                            hideLongEventIcons()
-//                            roomViewModel.handle(RoomViewActions.EditModeEnabled)
-//                            renderReplyEditMessage(event, true)
-//                        }
-//
-//                        R.string.forward -> {
-//                            cancelEventLongClickToolbar()
-//                            ForwardMessageDialog(
-//                                requireContext(),
-//                                session.getRoomService().getRoomRepository(),
-//                                glide
-//                            ) { roomEntity, alertDialog ->
-//                                Timber.d("kael on room clicked $roomEntity")
-//                                alertDialog.dismiss()
-//                                findNavController().navigate(R.id.action_roomFragment_self,
-//                                    Bundle().apply {
-//                                        putString("roomId", roomEntity.roomId)
-//                                        putBoolean("isFromUserList", false)
-//                                        putBoolean("isDirect", roomEntity.isDirect ?: false)
-//                                        putString(
-//                                            "forwardedEvent", gson.toJson(
-//                                                event.copy(
-//                                                    isForwarded = true,
-//                                                    roomId = roomEntity.roomId!!,
-//                                                    serverId = null,
-//                                                    id = null,
-//                                                    txnId = UUID.randomUUID().toString()
-//                                                )
-//                                            )
-//                                        )
-//                                    })
-//                            }.show()
-//                        }
-//
-//                        R.string.delete -> {
-//                            AlertDialog.Builder(requireContext())
-//                                .setTitle(getString(R.string.delete_message))
-//                                .setMessage(getString(R.string.do_you_want_to_delete_this_message))
-//                                .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
-//                                    roomViewModel.handle(RoomViewActions.RedactSelectedEvent)
-//                                    dialog.dismiss()
-//                                }.setNegativeButton(getString(R.string.no)) { dialog, _ ->
-//                                    dialog.dismiss()
-//                                }.create().show()
-//                        }
-//                    }
-//                }
-//            },
-//            offsetY = views.recyclerView.y.toInt(),
-//            isHighlighted = true
-//        ).show(parentFragmentManager, "")
-//    }
 }
