@@ -3,38 +3,42 @@ package com.github.peyrovi98.popupdialog
 import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Rect
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.drawToBitmap
+import android.view.Window
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
-import com.github.peyrovi98.popupdialog.databinding.DialogPopUpBinding
+import com.github.peyrovi98.popupdialog.databinding.ComGithubPeyrovi98PopupdialogDialogPopUpBinding
 
 
 class PopUpDialog(
     private val selectedView: View,
     private val popupView: View,
-    private val bitmapOffsetY: Int = 0,
-    private var offsetY: Int = 0,
-    private var offsetX: Int = 0,
+    private var startX: Int = 0,
+    private var endX: Int = 0,
+    private var startY: Int = 0,
+    private var endY: Int = 0,
     private val isHighlighted: Boolean = false,
 ) : DialogFragment(), Runnable {
-    private var bitmap: Bitmap?=null
+    private var bitmap: Bitmap? = null
     private val dialogHandler = Handler(Looper.myLooper()!!)
-    private var binding: DialogPopUpBinding? = null
+    private var binding: ComGithubPeyrovi98PopupdialogDialogPopUpBinding? = null
     private var screenX = 0f
     private var screenY = 0f
+    private val selectedViewPosition = IntArray(2)
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = DialogPopUpBinding.inflate(inflater, container, false)
+        binding =
+            ComGithubPeyrovi98PopupdialogDialogPopUpBinding.inflate(inflater, container, false)
         requireContext().resources.displayMetrics.apply {
             screenX = widthPixels.toFloat()
             screenY = heightPixels.toFloat()
@@ -49,14 +53,17 @@ class PopUpDialog(
 
     private fun initializer() {
         binding?.apply {
-            selectedView.drawToBitmap().let {
+            getBitmapFromViewUsingCanvas(selectedView).let {
                 imageViewCloneSelected.apply {
                     val params = layoutParams
                     params.height = it.height
                     params.width = it.width
                     layoutParams = params
-                    y = selectedView.y + bitmapOffsetY + offsetY
+                    x = selectedViewPosition[0].toFloat() + startX
+                    y = selectedViewPosition[1].toFloat()
                     bitmap = it
+                    isVisible = isHighlighted
+
                 }.setImageBitmap(it)
             }
 
@@ -64,6 +71,22 @@ class PopUpDialog(
                 this@PopUpDialog.dismiss()
             }
         }
+    }
+
+//    private fun getParentsSumY(y:Float, v:View) :Float{
+//        var mY = 0f
+//        v.parent?.let {
+//            m += getParentsSumY()
+//        }
+//    }
+
+    private fun statusBarHeight(): Int {
+        val rectangle = Rect()
+        val window: Window = requireActivity().window
+        window.decorView.getWindowVisibleDisplayFrame(rectangle)
+        val statusBarHeight = rectangle.top
+//        val contentViewTop = window.findViewById<View>(Window.ID_ANDROID_CONTENT).top
+        return statusBarHeight
     }
 
     override fun onResume() {
@@ -83,87 +106,99 @@ class PopUpDialog(
 
     override fun run() {
         binding?.apply {
-//            containerRecyclerView.apply {
-//                if (visibility != View.INVISIBLE)
-//                    return
-////                val alignMessageBox =
-////                    selectedView.findViewById<ConstraintLayout>(R.id.messageLayout)
-////                alignMessageBox?.let { x = findX(it, this) } ?: kotlin.run {
-//                    x = findX(imageViewClone, this)
-////                }
-//                y = findY(imageViewClone, this)
-//                scaleX = .9f
-//                scaleY = .9f
-//                alpha = 0f
-//                visibility = View.VISIBLE
-//                animate().scaleX(1f).scaleY(1f).alpha(1f).start()
-//            }
-//            imageViewClone.isVisible = isHighlighted
+            viewPopup.apply {
+                addView(popupView)
+                if (visibility != View.INVISIBLE)
+                    return
+                x = findPopupX()
+                y = findPopupY()
+                scaleX = .9f
+                scaleY = .9f
+                alpha = 0f
+                visibility = View.VISIBLE
+                animate().scaleX(1f).scaleY(1f).alpha(1f).start()
+            }
+            imageViewCloneSelected.isVisible = isHighlighted
         }
     }
 
-    private fun findX(alignView: View, attachmentView: View): Float {
+    private fun findPopupX(): Float {
         var targetX: Float
-        targetX = if (alignView.x < screenX / 2) {
-            (alignView.x + alignView.width / 2)
+        targetX = if (selectedViewPosition[0] < screenX / 2) {
+            (selectedViewPosition[0].toFloat() + selectedView.width / 2)
         } else {
-            (alignView.x + alignView.width / 2) - attachmentView.width
+            (selectedViewPosition[0].toFloat() + selectedView.width / 2) - binding!!.imageViewCloneSelected.width
         }
         if (targetX < 0)
             targetX = 0f
-        else if (screenX < targetX + attachmentView.width + 10)
-            targetX = screenX - (attachmentView.width + 10f)
+        else if (screenX < targetX + binding!!.imageViewCloneSelected.width + 10)
+            targetX = screenX - (binding!!.imageViewCloneSelected.width + 10f)
         return targetX
     }
 
-    private fun findY(alignView: View, attachmentView: View): Float {
+    private fun findPopupY(): Float {
         var targetY: Float
-        targetY = if (alignView.y < (screenY / 2) - alignView.measuredHeight) {
-            alignView.y + (alignView.measuredHeight + 10)
+        targetY = if (selectedViewPosition[1] < (screenY / 2) - selectedView.height) {
+            selectedViewPosition[1].toFloat() + (selectedView.height + 10)
         } else {
-            alignView.y - (attachmentView.height + 10)
+            selectedViewPosition[1].toFloat() - (binding!!.imageViewCloneSelected.height + 10)
         }
         if (targetY < 0)
             targetY = 0f
-        else if (screenY < targetY + attachmentView.height + 10)
-            targetY = screenY - (attachmentView.measuredHeight + 10f)
+        else if (screenY < targetY + binding!!.imageViewCloneSelected.height + 10)
+            targetY = screenY - (binding!!.imageViewCloneSelected.measuredHeight + 10f)
         return targetY
     }
 
-    private fun getBitmapFromViewUsingCanvas(v: View): ArrayList<Any> {
-        val result = ArrayList<Any>()
-//        val bitmap =
-//            Bitmap.createBitmap(v.width, v.height, Bitmap.Config.ARGB_8888)
-//        val canvas = Canvas(bitmap)
-//        v.draw(canvas)
-//        var offsetY = v.y.toInt()
-//        if (offsetY < 0) {
-//            offsetY *= -1
-//        } else {
-//            offsetY = 0
-//        }
-//        val height: Int = if (v.height - offsetY > views.recyclerView.height && offsetY > 0)
-//            views.recyclerView.height
-//        else if (v.height - offsetY > views.recyclerView.height && offsetY == 0)
-//            views.recyclerView.height - v.y.toInt()
-//        else if (v.y + v.height > views.recyclerView.height)
-//            v.height - (v.y.toInt() + v.height - views.recyclerView.height)
-//        else
-//            v.height - offsetY
-//
-//        result.add(
-//            Bitmap.createBitmap(
-//                bitmap,
-//                0,
-//                offsetY,
-//                v.width,
-//                height
-//            )
-//        )
-//        bitmap.recycle()
-//        result.add(offsetY)
+    private fun getBitmapFromViewUsingCanvas(v: View): Bitmap {
+        val result: Bitmap
+        selectedView.getLocationOnScreen(selectedViewPosition)
+        selectedViewPosition[1] -= statusBarHeight()
+        var bitmap =
+            Bitmap.createBitmap(v.width, v.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        v.draw(canvas)
+        bitmap = bitmapFixer(bitmap)
+
+        return bitmap
+
+    }
+
+    private fun bitmapFixer(bitmap: Bitmap): Bitmap {
+        var offsetX = 0
+        var offsetY = 0
+        var width = bitmap.width
+        var height = bitmap.height
+        if (endX != 0) {
+            if (selectedViewPosition[0] < startX) {
+                offsetX = startX - selectedViewPosition[0]
+                width -= offsetX
+                selectedViewPosition[0] = startX
+            }
+            if (selectedViewPosition[0] + width > endX)
+                width = endX - selectedViewPosition[0]
+        }
+        if (endY != 0) {
+            if (selectedViewPosition[1] < startY) {
+                offsetY = startY - selectedViewPosition[1]
+                height -= offsetY
+                selectedViewPosition[1] = startY
+            }
+            if (selectedViewPosition[1] + height > endY)
+                height = endY - selectedViewPosition[1]
+
+        }
+        val result = Bitmap.createBitmap(
+            bitmap,
+            offsetX,
+            offsetY,
+            width,
+            height
+        )
+        bitmap.recycle()
         return result
     }
+
 
 //    private fun messageOptionPopup(v: View, event: DecryptedEventEntity) {
 //        val result = getBitmapFromViewUsingCanvas(v)
