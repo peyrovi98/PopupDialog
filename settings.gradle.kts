@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "PopupDialog"
 include(":app")
+include(":library")
