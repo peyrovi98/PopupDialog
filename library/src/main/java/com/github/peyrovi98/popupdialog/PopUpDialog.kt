@@ -32,6 +32,9 @@ class PopUpDialog(
     private var screenY = 0f
     private val selectedViewPosition = IntArray(2)
 
+    init {
+        setStyle(STYLE_NORMAL, R.style.com_github_peyrovi98_popupdialog_DialogTheme)
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -93,10 +96,6 @@ class PopUpDialog(
     override fun onResume() {
         super.onResume()
         dialogHandler.postDelayed(this@PopUpDialog, 100)
-    }
-
-    override fun getTheme(): Int {
-        return R.style.com_github_peyrovi98_popupdialog_DialogTheme
     }
 
     override fun onDismiss(dialog: DialogInterface) {
@@ -165,7 +164,7 @@ class PopUpDialog(
     private fun getBitmapFromViewUsingCanvas(v: View): Bitmap {
         val result: Bitmap
         selectedView.getLocationOnScreen(selectedViewPosition)
-//        selectedViewPosition[1] -= statusBarHeight()
+        selectedViewPosition[1] -= statusBarHeight()
         var bitmap =
             Bitmap.createBitmap(v.width, v.height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
