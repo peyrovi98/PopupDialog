@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
-    android:background="#4D000000"
     android:id="@+id/containerView"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/imageView_cloneBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
+        android:foreground="#4D000000"
+        android:visibility="visible"/>
+
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imageView_cloneSelected"
         android:layout_width="wrap_content"

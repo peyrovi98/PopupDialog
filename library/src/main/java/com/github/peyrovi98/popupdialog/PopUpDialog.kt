@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import androidx.core.view.drawToBitmap
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import com.github.peyrovi98.popupdialog.databinding.ComGithubPeyrovi98PopupdialogDialogPopUpBinding
@@ -35,6 +36,7 @@ class PopUpDialog(
     init {
         setStyle(STYLE_NORMAL, R.style.com_github_peyrovi98_popupdialog_DialogTheme)
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -56,6 +58,11 @@ class PopUpDialog(
 
     private fun initializer() {
         binding?.apply {
+            if (isHighlighted)
+                requireActivity().findViewById<View>(android.R.id.content)?.let {
+                    imageViewCloneBackground.setImageBitmap(it.drawToBitmap())
+                    imageViewCloneBackground.setBackgroundColor(requireContext().getColor(android.R.color.white))
+                }
             viewPopup.addView(popupView)
             getBitmapFromViewUsingCanvas(selectedView).let {
                 imageViewCloneSelected.apply {
