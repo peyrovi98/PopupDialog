@@ -51,7 +51,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "com.github.peyrovi98"
                 artifactId = "PopupDialog"
-                version = "1.0.2"
+                version = "1.0.3"
             }
         }
     }

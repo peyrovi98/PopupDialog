@@ -27,6 +27,7 @@ class PopUpDialog(
     private val isHighlighted: Boolean = false,
 ) : DialogFragment(), Runnable {
     private var bitmap: Bitmap? = null
+    private var bitmapBackground: Bitmap? = null
     private val dialogHandler = Handler(Looper.myLooper()!!)
     private var binding: ComGithubPeyrovi98PopupdialogDialogPopUpBinding? = null
     private var screenX = 0f
@@ -60,7 +61,8 @@ class PopUpDialog(
         binding?.apply {
             if (isHighlighted)
                 requireActivity().findViewById<View>(android.R.id.content)?.let {
-                    imageViewCloneBackground.setImageBitmap(it.drawToBitmap())
+                    bitmapBackground = it.drawToBitmap()
+                    imageViewCloneBackground.setImageBitmap(bitmapBackground)
                     imageViewCloneBackground.setBackgroundColor(requireContext().getColor(android.R.color.white))
                 }
             viewPopup.addView(popupView)
@@ -109,6 +111,7 @@ class PopUpDialog(
         super.onDismiss(dialog)
         dialogHandler.removeCallbacks(this)
         bitmap?.recycle()
+        bitmapBackground?.recycle()
     }
 
     override fun run() {
