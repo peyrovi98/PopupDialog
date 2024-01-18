@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.github.peyrovi98.GuideFrame
 import com.github.peyrovi98.popupdialog.PopUpDialog
 import com.github.peyrovi98.popupdialog_sample.databinding.ActivityMainBinding
 import com.github.peyrovi98.popupdialog_sample.databinding.DialogExitBinding
@@ -26,7 +27,7 @@ class MainActivity : AppCompatActivity(), MessageAdapter.EventListener {
                 }
             }
         }
-        binding.imageViewClose.setOnClickListener { view->
+        binding.imageViewClose.setOnClickListener { view ->
             DialogExitBinding.inflate(layoutInflater).let {
                 PopUpDialog(view, it.root).apply {
                     it.buttonCancel.setOnClickListener { dismiss() }
@@ -41,23 +42,40 @@ class MainActivity : AppCompatActivity(), MessageAdapter.EventListener {
     }
 
     override fun onItemClickListener(view: View, message: Message) {
-        DialogPopUpBinding.inflate(layoutInflater).let { popup->
+        DialogPopUpBinding.inflate(layoutInflater).let { popup ->
             popup.recyclerView.layoutManager = LinearLayoutManager(this)
             val list = ArrayList<DialogListItem>()
-            list.add(DialogListItem(0, android.R.drawable.ic_menu_search, androidx.appcompat.R.string.search_menu_title))
-            list.add(DialogListItem(0, android.R.drawable.ic_delete, androidx.appcompat.R.string.abc_menu_delete_shortcut_label))
+            list.add(
+                DialogListItem(
+                    0,
+                    android.R.drawable.ic_menu_search,
+                    androidx.appcompat.R.string.search_menu_title
+                )
+            )
+            list.add(
+                DialogListItem(
+                    0,
+                    android.R.drawable.ic_delete,
+                    androidx.appcompat.R.string.abc_menu_delete_shortcut_label
+                )
+            )
             PopUpDialog(
                 view,
                 popup.root,
-                startY = binding.recyclerView.y.toInt(),
-                endY = binding.recyclerView.height + binding.recyclerView.y.toInt(),
+                GuideFrame(
+                    startY = binding.recyclerView.y.toInt(),
+                    endY = binding.recyclerView.height + binding.recyclerView.y.toInt()
+                ),
                 isHighlighted = true
             ).apply {
-                popup.recyclerView.adapter = PopupDialogListRecyclerViewAdapter(this, list, object :DialogListRecyclerViewAdapterEventListener{
-                    override fun onDialogListItemClickListener(id: Int) {
-                        Toast.makeText(this@MainActivity, "$id", Toast.LENGTH_SHORT).show()
-                    }
-                })
+                popup.recyclerView.adapter = PopupDialogListRecyclerViewAdapter(
+                    this,
+                    list,
+                    object : DialogListRecyclerViewAdapterEventListener {
+                        override fun onDialogListItemClickListener(id: Int) {
+                            Toast.makeText(this@MainActivity, "$id", Toast.LENGTH_SHORT).show()
+                        }
+                    })
             }.show(supportFragmentManager, "")
         }
 
