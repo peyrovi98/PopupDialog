@@ -5,11 +5,10 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.view.View
 import android.view.Window
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 import com.github.peyrovi98.GuideFrame
+import kotlin.math.abs
 
 class PopUpPresenter(
     private val model: PopUpModel,
@@ -17,7 +16,7 @@ class PopUpPresenter(
     private val activity: FragmentActivity,
     private val guideFrame: GuideFrame = GuideFrame()
 ) {
-    private var isClosingKeyboard = false
+    private var keyboardPadding = 0
     private val selectedViewPosition = IntArray(2)
     private var itemBitmap: Bitmap? = null
     private var backgroundBitmap: Bitmap? = null
@@ -35,7 +34,8 @@ class PopUpPresenter(
         model.timeDelay(timeDelay).observe(activity as LifecycleOwner) { _ ->
             itemView.getLocationOnScreen(selectedViewPosition)
             selectedViewPosition[1] -= statusBarHeight()
-            backgroundBitmap = getBitmapFromViewUsingCanvas(activity.findViewById(android.R.id.content))
+            backgroundBitmap =
+                getBitmapFromViewUsingCanvas(activity.findViewById(android.R.id.content))
             view.prepareBackground(backgroundBitmap)
             itemBitmap = getBitmapFromViewUsingCanvas(itemView)
             itemBitmap = bitmapFixer(itemBitmap!!)
@@ -96,7 +96,7 @@ class PopUpPresenter(
                     if (it > 0) {
                         height = it
                     } else
-                        isClosingKeyboard = true
+                        keyboardPadding = abs(it)
                 }
 
         }
@@ -146,8 +146,9 @@ class PopUpPresenter(
         if (guideFrame.endY != 0)
             if (targetY < guideFrame.startY)
                 targetY = guideFrame.startY.toFloat()
-            else if (guideFrame.endY < targetY + popUpView.height && isClosingKeyboard)
+            else if (guideFrame.endY < targetY + popUpView.height)
                 targetY = guideFrame.endY - popUpView.height.toFloat()
+        targetY += keyboardPadding - 10
         return targetY
     }
 
