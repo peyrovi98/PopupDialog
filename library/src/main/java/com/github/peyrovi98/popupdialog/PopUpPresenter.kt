@@ -7,21 +7,23 @@ import android.view.View
 import android.view.Window
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
-import com.github.peyrovi98.GuideFrame
 import kotlin.math.abs
 
 class PopUpPresenter(
     private val model: PopUpModel,
     private val view: PopUpDialogIFace,
     private val activity: FragmentActivity,
-    private val guideFrame: GuideFrame = GuideFrame()
+    private val guideFrameView: View?
 ) {
-    private var keyboardPadding = 0
     private val selectedViewPosition = IntArray(2)
     private var itemBitmap: Bitmap? = null
     private var backgroundBitmap: Bitmap? = null
     private var screenX = 0f
     private var screenY = 0f
+    private var startX = 0
+    private var endX = 0
+    private var startY = 0
+    private var endY = 0
 
     init {
         activity.resources.displayMetrics.apply {
@@ -32,6 +34,12 @@ class PopUpPresenter(
 
     fun prepare(itemView: View, popUpView: View, timeDelay: Long = 200) {
         model.timeDelay(timeDelay).observe(activity as LifecycleOwner) { _ ->
+            guideFrameView?.let {
+                startX = it.x.toInt()
+                endX = it.x.toInt() + it.width
+                startY = it.y.toInt()
+                endY = it.y.toInt() + it.height
+            }
             itemView.getLocationOnScreen(selectedViewPosition)
             selectedViewPosition[1] -= statusBarHeight()
             backgroundBitmap =
@@ -41,7 +49,7 @@ class PopUpPresenter(
             itemBitmap = bitmapFixer(itemBitmap!!)
             view.prepareItemSelected(
                 itemBitmap,
-                selectedViewPosition[0].toFloat() + guideFrame.startX,
+                selectedViewPosition[0].toFloat() + startX,
                 selectedViewPosition[1].toFloat()
             )
             view.preparePopupDialog(
@@ -72,31 +80,30 @@ class PopUpPresenter(
         var offsetY = 0
         var width = bitmap.width
         var height = bitmap.height
-        if (guideFrame.endX != 0) {
-            if (selectedViewPosition[0] < guideFrame.startX) {
-                offsetX = guideFrame.startX - selectedViewPosition[0]
+        if (endX != 0) {
+            if (selectedViewPosition[0] < startX) {
+                offsetX = startX - selectedViewPosition[0]
                 width -= offsetX
-                selectedViewPosition[0] = guideFrame.startX
+                selectedViewPosition[0] = startX
             }
-            if (selectedViewPosition[0] + width > guideFrame.endX)
-                (guideFrame.endX - selectedViewPosition[0]).let {
+            if (selectedViewPosition[0] + width > endX)
+                (endX - selectedViewPosition[0]).let {
                     if (it > 0) {
                         width = it
                     }
                 }
         }
-        if (guideFrame.endY != 0) {
-            if (selectedViewPosition[1] < guideFrame.startY) {
-                offsetY = guideFrame.startY - selectedViewPosition[1]
+        if (endY != 0) {
+            if (selectedViewPosition[1] < startY) {
+                offsetY = startY - selectedViewPosition[1]
                 height -= offsetY
-                selectedViewPosition[1] = guideFrame.startY
+                selectedViewPosition[1] = startY
             }
-            if (selectedViewPosition[1] + height > guideFrame.endY)
-                (guideFrame.endY - selectedViewPosition[1]).let {
+            if (selectedViewPosition[1] + height > endY)
+                (endY - selectedViewPosition[1]).let {
                     if (it > 0) {
                         height = it
-                    } else
-                        keyboardPadding = abs(it)
+                    }
                 }
 
         }
@@ -122,11 +129,11 @@ class PopUpPresenter(
             targetX = 0f
         else if (screenX < targetX + itemView.width + 10)
             targetX = screenX - (itemView.width + 10f)
-        if (guideFrame.endX != 0)
-            if (targetX < guideFrame.startX)
-                targetX = guideFrame.startX.toFloat()
-            else if (guideFrame.endX < targetX + popUpView.width)
-                targetX = guideFrame.endX - popUpView.width.toFloat()
+        if (endX != 0)
+            if (targetX < startX)
+                targetX = startX.toFloat()
+            else if (endX < targetX + popUpView.width)
+                targetX = endX - popUpView.width.toFloat()
         return targetX
     }
 
@@ -143,12 +150,11 @@ class PopUpPresenter(
         else if (screenY < targetY + itemView.height + 10)
             targetY = screenY - (itemView.measuredHeight + 10f)
 
-        if (guideFrame.endY != 0)
-            if (targetY < guideFrame.startY)
-                targetY = guideFrame.startY.toFloat()
-            else if (guideFrame.endY < targetY + popUpView.height)
-                targetY = guideFrame.endY - popUpView.height.toFloat()
-        targetY += keyboardPadding - 10
+        if (endY != 0)
+            if (targetY < startY)
+                targetY = startY.toFloat()
+            else if (endY < targetY + popUpView.height)
+                targetY = endY - popUpView.height.toFloat()
         return targetY
     }
 

@@ -2,26 +2,19 @@ package com.github.peyrovi98.popupdialog
 
 import android.content.DialogInterface
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Rect
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
-import androidx.core.view.drawToBitmap
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
-import com.github.peyrovi98.GuideFrame
 import com.github.peyrovi98.popupdialog.databinding.ComGithubPeyrovi98PopupdialogDialogPopUpBinding
 
 
 class PopUpDialog(
     private val selectedView: View,
     private val popupView: View,
-    private val guideFrame: GuideFrame = GuideFrame(),
+    private val guideFrameView: View? = null,
     private val isHighlighted: Boolean = false,
     private val timeDelay: Long = 500
 ) : DialogFragment(), PopUpDialogIFace {
@@ -40,7 +33,7 @@ class PopUpDialog(
         binding =
             ComGithubPeyrovi98PopupdialogDialogPopUpBinding.inflate(inflater, container, false)
         binding?.let {
-            presenter = PopUpPresenter(PopUpModel(), this, requireActivity(), guideFrame)
+            presenter = PopUpPresenter(PopUpModel(), this, requireActivity(), guideFrameView)
         }
         return binding!!.root
     }

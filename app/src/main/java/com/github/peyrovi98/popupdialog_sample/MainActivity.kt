@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.github.peyrovi98.GuideFrame
 import com.github.peyrovi98.popupdialog.PopUpDialog
 import com.github.peyrovi98.popupdialog_sample.databinding.ActivityMainBinding
 import com.github.peyrovi98.popupdialog_sample.databinding.DialogExitBinding
@@ -62,10 +61,7 @@ class MainActivity : AppCompatActivity(), MessageAdapter.EventListener {
             PopUpDialog(
                 view,
                 popup.root,
-                GuideFrame(
-                    startY = binding.recyclerView.y.toInt(),
-                    endY = binding.recyclerView.height + binding.recyclerView.y.toInt()
-                ),
+                binding.recyclerView,
                 isHighlighted = true
             ).apply {
                 popup.recyclerView.adapter = PopupDialogListRecyclerViewAdapter(
